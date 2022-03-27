@@ -42,35 +42,42 @@ app.use(methodOverride("_method"));              //initialize method override to
 //                  RESTFUL ROUTES                    //
 ////////////////////////////////////////////////////////
 
+//root route
 app.get("/", (req, res) => {
   res.render("home");
 });
 
+// INDEX route - show all campgrounds
 app.get("/campgrounds", async (req, res) => {
   const campgrounds = await Campground.find();
   res.render("campgrounds/index", { campgrounds });
 });
 
+// NEW route - show form to create new campground
 app.get("/campgrounds/new", async (req, res) => {
   res.render("campgrounds/new");
 });
 
+// CREATE route - add new campground to DB
 app.post("/campgrounds", async (req, res) => {
   const campground = new Campground(req.body.campground);
   await campground.save();
   res.redirect(`/campgrounds/${campground.id}`);
 });
 
+// SHOW route - show info about one campground
 app.get("/campgrounds/:id", async (req, res) => {
   const campground = await Campground.findById(req.params.id);
   res.render("campgrounds/show", { campground });
 });
 
+// EDIT route - show form to edit campground
 app.get("/campgrounds/:id/edit", async (req, res) => {
   const campground = await Campground.findById(req.params.id);
   res.render("campgrounds/edit", { campground });
 });
 
+// UPDATE route - update campground in DB
 app.put("/campgrounds/:id", async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findByIdAndUpdate(id, {
@@ -79,12 +86,14 @@ app.put("/campgrounds/:id", async (req, res) => {
   res.redirect(`/campgrounds/${campground.id}`);
 });
 
+// DELETE route - delete campground from DB
 app.delete("/campgrounds/:id", async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findByIdAndDelete(id);
   res.redirect("/campgrounds");
 });
 
+// Port Setup
 app.listen(3000, () => {
   console.log("Serving on port 3000");
 });
