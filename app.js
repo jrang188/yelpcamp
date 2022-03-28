@@ -1,16 +1,9 @@
-////////////////////////////////////////////////////////
-//                      IMPORTS                       //
-////////////////////////////////////////////////////////
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
 const Campground = require("./models/campground");
-
-////////////////////////////////////////////////////////
-//              MONGOOSE CONNECTION SETUP             //
-////////////////////////////////////////////////////////
 
 /**
  * Mongoose connection to MongoDB
@@ -19,12 +12,8 @@ async function main() {
   await mongoose.connect("mongodb://localhost:27017/yelpcamp");
 }
 
-/** Error Logging for Mongoose */
+// Error Logging for Mongoose
 main().catch((err) => console.log(err));
-
-////////////////////////////////////////////////////////
-//                  EXPRESS APP SETUP                 //
-////////////////////////////////////////////////////////
 
 // Create express app
 const app = express(); 
@@ -37,10 +26,6 @@ app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", ejsMate);                      // config express to use ejs-mate as a custom template engine
 app.use(express.urlencoded({ extended: true })); // initialize middleware that parses urlencoded bodies 
 app.use(methodOverride("_method"));              //initialize method override to allow us to use the _method parameter in our form
-
-////////////////////////////////////////////////////////
-//                  RESTFUL ROUTES                    //
-////////////////////////////////////////////////////////
 
 //root route
 app.get("/", (req, res) => {
