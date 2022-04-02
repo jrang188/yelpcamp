@@ -25,7 +25,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.engine("ejs", ejsMate);                      // config express to use ejs-mate as a custom template engine
 app.use(express.urlencoded({ extended: true })); // initialize middleware that parses urlencoded bodies 
-app.use(methodOverride("_method"));              //initialize method override to allow us to use the _method parameter in our form
+app.use(methodOverride("_method"));              // initialize method override to allow us to use the _method parameter in our form
 
 //root route
 app.get("/", (req, res) => {
@@ -44,10 +44,16 @@ app.get("/campgrounds/new", async (req, res) => {
 });
 
 // CREATE route - add new campground to DB
-app.post("/campgrounds", async (req, res) => {
-  const campground = new Campground(req.body.campground);
-  await campground.save();
-  res.redirect(`/campgrounds/${campground.id}`);
+app.post("/campgrounds", async (req, res, next) => {
+  try{
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    res.redirect(`/campgrounds/${campground.id}`);
+  } catch(err){
+    console.log(err)
+    next(err)
+  }
+
 });
 
 // SHOW route - show info about one campground
@@ -77,6 +83,10 @@ app.delete("/campgrounds/:id", async (req, res) => {
   const campground = await Campground.findByIdAndDelete(id);
   res.redirect("/campgrounds");
 });
+
+app.use((err, req, res, next) => {
+  res.send("OH NO!!");
+})
 
 // Port Setup
 app.listen(3000, () => {
