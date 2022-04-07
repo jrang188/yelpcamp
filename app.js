@@ -88,7 +88,7 @@ app.post(
 app.get(
   "/campgrounds/:id",
   catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
+    const campground = await Campground.findById(req.params.id).populate('reviews');
     res.render("campgrounds/show", { campground });
   })
 );
@@ -152,3 +152,4 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
   console.log("Serving on port 3000");
 });
+
