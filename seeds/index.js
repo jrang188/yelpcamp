@@ -1,14 +1,12 @@
-const express = require("express");
-const path = require("path");
-const mongoose = require("mongoose");
-const cities = require("./cities");
-const { places, descriptors } = require("./seedHelper");
-const Campground = require("../models/campground");
+const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose');
+const cities = require('./cities');
+const { places, descriptors } = require('./seedHelper');
+const Campground = require('../models/campground');
 
 async function main() {
-  await mongoose
-    .connect("mongodb://localhost:27017/yelpcamp")
-    .then(console.log("Database Connected"));
+  await mongoose.connect('mongodb://localhost:27017/yelpcamp').then(console.log('Database Connected'));
 }
 
 main().catch((err) => console.log(err));
@@ -25,8 +23,8 @@ async function seedDB() {
       title: `${sample(descriptors)} ${sample(places)}`,
       image: 'https://source.unsplash.com/collection/483251',
       description:
-        "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Mollitia accusantium, aliquid ab totam qui expedita deleniti hic eos a delectus dicta ex atque explicabo iusto velit, laboriosam distinctio unde quisquam.",
-      price
+        'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Mollitia accusantium, aliquid ab totam qui expedita deleniti hic eos a delectus dicta ex atque explicabo iusto velit, laboriosam distinctio unde quisquam.',
+      price,
     });
     await camp.save();
   }

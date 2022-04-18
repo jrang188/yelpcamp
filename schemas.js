@@ -1,4 +1,4 @@
-const joi = require("joi");
+const joi = require('joi');
 
 module.exports.campgroundSchema = joi.object({
   campground: joi
