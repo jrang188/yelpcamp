@@ -1,4 +1,4 @@
-if(process.env.NODE_ENV !== 'production'){
+if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
@@ -12,6 +12,8 @@ const ExpressError = require('./utils/ExpressError');
 const methodOverride = require('method-override');
 const passport = require('passport');
 const localStrategry = require('passport-local');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 const User = require('./models/user');
 
 const userRoutes = require('./routes/users');
@@ -40,13 +42,16 @@ app.engine('ejs', ejsMate); // config express to use ejs-mate as a custom templa
 app.use(express.urlencoded({ extended: true })); // initialize middleware that parses urlencoded bodies
 app.use(methodOverride('_method')); // initialize method override to allow us to use the _method parameter in our form
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(mongoSanitize()); // initialize mongo sanitize to prevent mongodb injection
 
 const sessionConfig = {
+  name: 'session',
   secret: 'placeholder-secret-for-now-hehe!!',
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
+    // secure: true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
@@ -54,6 +59,57 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 app.use(flash());
+
+const scriptSrcUrls = [
+  "https://stackpath.bootstrapcdn.com/",
+  "https://api.tiles.mapbox.com/",
+  "https://api.mapbox.com/",
+  "https://kit.fontawesome.com/",
+  "https://cdnjs.cloudflare.com/",
+  "https://cdn.jsdelivr.net",
+  "https://res.cloudinary.com/di7euib4q/"
+];
+const styleSrcUrls = [
+  "https://kit-free.fontawesome.com/",
+  "https://stackpath.bootstrapcdn.com/",
+  "https://api.mapbox.com/",
+  "https://api.tiles.mapbox.com/",
+  "https://fonts.googleapis.com/",
+  "https://use.fontawesome.com/",
+  "https://cdn.jsdelivr.net",
+  "https://res.cloudinary.com/di7euib4q/"
+];
+const connectSrcUrls = [
+  "https://*.tiles.mapbox.com",
+  "https://api.mapbox.com",
+  "https://events.mapbox.com",
+  "https://res.cloudinary.com/di7euib4q/"
+];
+const fontSrcUrls = ["https://res.cloudinary.com/di7euib4q/"];
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: [],
+        connectSrc: ["'self'", ...connectSrcUrls],
+        scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+        styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+        workerSrc: ["'self'", "blob:"],
+        objectSrc: [],
+        imgSrc: [
+          "'self'",
+          "blob:",
+          "data:",
+          "https://res.cloudinary.com/di7euib4q/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
+          "https://images.unsplash.com/",
+        ],
+        fontSrc: ["'self'", ...fontSrcUrls],
+      },
+    },
+    crossOriginEmbedderPolicy: false
+  })
+);
+
 
 app.use(passport.initialize());
 app.use(passport.session());
